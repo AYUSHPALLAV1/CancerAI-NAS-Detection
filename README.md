@@ -97,7 +97,7 @@ The model accurately detects five tissue types:
 
 1. **Clone the Repository**
 ```bash
-git clone https://github.com/Villwin007/Cancer-Image-Classification-with-AutoML-Driven-Neural-Architecture-Optimization.git
+git clone https://github.com/DhanushS-11/Cancer-Image-Classification-with-AutoML-Driven-Neural-Architecture-Optimization.git
 cd Cancer-Image-Classification-with-AutoML-Driven-Neural-Architecture-Optimization
 ```
 
@@ -278,7 +278,7 @@ We welcome contributions to enhance this medical AI system! Here's how you can h
 5. Open a Pull Request
 
 ### Reporting Issues
-Please use the [GitHub issue tracker](https://github.com/Villwin007/Cancer-Image-Classification-with-AutoML-Driven-Neural-Architecture-Optimization/issues) for:
+Please use the [GitHub issue tracker](https://github.com/DhanushS-11/Cancer-Image-Classification-with-AutoML-Driven-Neural-Architecture-Optimization/issues) for:
 - Bug reports
 - Feature requests
 - Documentation improvements
@@ -297,7 +297,7 @@ If you use this work in your research, please cite:
   year = {2025},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{https://github.com/Villwin007/Cancer-Image-Classification-with-AutoML-Driven-Neural-Architecture-Optimization}}
+  howpublished = {\url{https://github.com/DhanushS-11/Cancer-Image-Classification-with-AutoML-Driven-Neural-Architecture-Optimization}}
 }
 ```
 
@@ -310,7 +310,7 @@ If you use this work in your research, please cite:
 ## 📞 Support
 
 For questions, issues, or collaborations:
-- **GitHub Issues**: [Create an issue](https://github.com/Villwin007/Cancer-Image-Classification-with-AutoML-Driven-Neural-Architecture-Optimization/issues)
+- **GitHub Issues**: [Create an issue](https://github.com/DhanushS-11/Cancer-Image-Classification-with-AutoML-Driven-Neural-Architecture-Optimization/issues)
 - **Email**: s.dhanush1106@gmail.com
 - **Documentation**: See code comments and this README
 
