@@ -1,33 +1,33 @@
 /* ═══════════════════════════════════════════════════════════
    EXPLANATION  —  Pipeline with central heart video
    ═══════════════════════════════════════════════════════════ */
+
+/* The video background is ~#ededed. Setting the section to
+   exactly that colour means no blending tricks are needed —
+   the video and the section simply share the same grey. */
+:root {
+  --pipeline-bg: #ededed;
+}
+
 .explanation {
   padding: 0 0 80px;
-  /* Pure white so mix-blend-mode:multiply on the video is
-     mathematically perfect: white × video-px = video-px
-     → video grey bg becomes invisible, heart shows clean */
-  background: #ffffff;
-  /* Gradient ramps blend this white section into the
-     stone-grey sections above and below it */
-  box-shadow:
-    0 -60px 60px 60px #ffffff,  /* fade FROM above */
-    0  60px 60px 60px #ffffff;  /* fade TO below  */
+  background: var(--pipeline-bg);
 }
-/* Fades the white section smoothly into the page on both ends */
+
+/* Gradient ramps: stone-grey (#e8e9ea) → #ededed at top,
+   #ededed → stone-grey at bottom. Seamless page transition. */
 .explanation::before,
 .explanation::after {
   content: '';
   display: block;
-  height: 80px;
+  height: 64px;
   pointer-events: none;
 }
 .explanation::before {
-  background: linear-gradient(to bottom, var(--bg-base), #ffffff);
-  margin-bottom: 20px;
+  background: linear-gradient(to bottom, var(--bg-base), var(--pipeline-bg));
 }
 .explanation::after {
-  background: linear-gradient(to bottom, #ffffff, var(--bg-base));
-  margin-top: 20px;
+  background: linear-gradient(to bottom, var(--pipeline-bg), var(--bg-base));
 }
 
 
@@ -128,31 +128,25 @@
   justify-content: center;
   gap: 10px;
   position: relative;
-  /* NO background, NO border — wrapper must be invisible */
   background: transparent;
   border: none;
-  isolation: auto;       /* must NOT isolate — lets blend mode
-                            composite against the grey page bg */
 }
 
 .pipeline-video {
   width: 100%;
   height: 100%;
   max-height: 440px;
-  /* cover crops the black letterbox bars at top/bottom */
   object-fit: cover;
   object-position: center 35%;
-  /* ─── NO border, NO radius, NO shadow ─── */
+  /* No border, no radius, no shadow — fully frameless */
   border: none;
   border-radius: 0;
   box-shadow: none;
   background: transparent;
-  /* With pure-white section background, multiply is perfect:
-     white(1) × video(x) = video(x)—grey bg disappears,
-     coloured heart pixels remain exactly as-is */
-  mix-blend-mode: multiply;
-  /* Radial + top/bottom linear mask: fades all four edges
-     so there is absolutely NO visible rectangular boundary */
+  /* No mix-blend-mode needed — section bg #ededed matches
+     the video background colour exactly. */
+  /* Radial + linear mask: fades all four edges so the video
+     has no visible rectangular boundary against the section */
   -webkit-mask-image:
     linear-gradient(
       to bottom,
