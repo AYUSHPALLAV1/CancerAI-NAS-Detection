@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   EXPLANATION  —  Pipeline steps + tech specs
+   EXPLANATION  —  Pipeline with central heart video
    ═══════════════════════════════════════════════════════════ */
 .explanation {
   padding: 100px 0 80px;
@@ -29,49 +29,102 @@
   letter-spacing: 0.02em;
   color: var(--text-primary);
   text-transform: uppercase;
-  margin-bottom: 52px;
+  margin-bottom: 48px;
   animation: fadeUp 0.55s 0.05s var(--ease) both;
 }
 
-/* ── Steps grid ── */
-.steps-grid {
+/* ═══════════════════════════════════════════════════════════
+   PIPELINE GRID  —  3 cols: cards | video | cards
+   CSS Grid named areas:
+      tl  vid  tr
+      bl  vid  br
+   ═══════════════════════════════════════════════════════════ */
+.pipeline-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 300px 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    "tl vid tr"
+    "bl vid br";
   gap: 16px;
+  align-items: stretch;
   margin-bottom: 24px;
   animation: fadeUp 0.6s 0.1s var(--ease) both;
 }
 
+/* ── Corner cards ── */
 .step-card {
-  padding: 32px 28px;
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-height: 200px;
 }
 
+.step-tl { grid-area: tl; }
+.step-tr { grid-area: tr; }
+.step-bl { grid-area: bl; }
+.step-br { grid-area: br; }
+
+/* Ghost number */
 .step-num {
   font-family: var(--font-display);
-  font-size: 48px;
+  font-size: 44px;
   line-height: 1;
   color: rgba(17,18,20,0.10);
   letter-spacing: 0.04em;
   margin-bottom: 2px;
 }
-
 .step-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-primary);
   margin: 0;
 }
-
 .step-body {
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 1.75;
   color: var(--text-secondary);
   margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CENTRAL VIDEO COLUMN
+   ═══════════════════════════════════════════════════════════ */
+.pipeline-video-wrap {
+  grid-area: vid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  /* allow mix-blend-mode to composite onto the grey bg */
+  isolation: auto;
+}
+
+.pipeline-video {
+  width: 100%;
+  height: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  /* mix-blend-mode removes the dark video background so
+     the heart appears to float on the stone-grey page */
+  mix-blend-mode: multiply;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  background: transparent;
+}
+
+.pipeline-video-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  text-align: center;
 }
 
 /* ── Tech specs block ── */
@@ -79,7 +132,6 @@
   padding: 36px 32px;
   animation: fadeUp 0.65s 0.15s var(--ease) both;
 }
-
 .tech-heading {
   font-family: var(--font-display);
   font-size: 28px;
@@ -88,19 +140,16 @@
   color: var(--text-primary);
   margin-bottom: 24px;
 }
-
-.tech-table { display: flex; flex-direction: column; gap: 0; }
-
+.tech-table { display: flex; flex-direction: column; }
 .tech-row {
   display: grid;
   grid-template-columns: 160px 1fr;
   gap: 24px;
-  padding: 13px 0;
+  padding: 12px 0;
   border-bottom: 1px solid rgba(17,18,20,0.07);
   align-items: baseline;
 }
 .tech-row:last-child { border-bottom: none; }
-
 .tech-key {
   font-size: 11px;
   font-weight: 600;
@@ -115,7 +164,23 @@
 }
 
 /* ── Responsive ── */
+@media (max-width: 900px) {
+  .pipeline-grid {
+    grid-template-columns: 1fr 240px 1fr;
+  }
+  .pipeline-video { max-height: 340px; }
+}
+
 @media (max-width: 700px) {
-  .steps-grid { grid-template-columns: 1fr; }
-  .tech-row   { grid-template-columns: 1fr; gap: 4px; }
+  /* Stack vertically on mobile: video top, then 2x2 grid */
+  .pipeline-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "vid vid"
+      "tl  tr"
+      "bl  br";
+  }
+  .pipeline-video { max-height: 260px; }
+  .tech-row { grid-template-columns: 1fr; gap: 4px; }
 }
