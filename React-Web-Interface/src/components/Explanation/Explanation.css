@@ -137,26 +137,24 @@
   height: 100%;
   max-height: 440px;
   object-fit: cover;
-  object-position: center 35%;
-  /* No border, no radius, no shadow — fully frameless */
+  /* Shift upward so less of the lighter top area is visible */
+  object-position: center 50%;
   border: none;
   border-radius: 0;
   box-shadow: none;
   background: transparent;
-  /* No mix-blend-mode needed — section bg #ededed matches
-     the video background colour exactly. */
-  /* Radial + linear mask: fades all four edges so the video
-     has no visible rectangular boundary against the section */
+  /* Layered mask — top fade is aggressive (0%→40%) to cover the
+     lighter letterbox band; bottom fade is softer (80%→100%) */
   -webkit-mask-image:
     linear-gradient(
       to bottom,
       transparent  0%,
-      black        18%,
-      black        82%,
+      black        40%,
+      black        80%,
       transparent 100%
     ),
     radial-gradient(
-      ellipse 90% 100% at 50% 50%,
+      ellipse 92% 100% at 50% 50%,
       black 55%,
       transparent 100%
     );
@@ -165,12 +163,12 @@
     linear-gradient(
       to bottom,
       transparent  0%,
-      black        18%,
-      black        82%,
+      black        40%,
+      black        80%,
       transparent 100%
     ),
     radial-gradient(
-      ellipse 90% 100% at 50% 50%,
+      ellipse 92% 100% at 50% 50%,
       black 55%,
       transparent 100%
     );
