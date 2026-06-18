@@ -41,7 +41,7 @@
    ═══════════════════════════════════════════════════════════ */
 .pipeline-grid {
   display: grid;
-  grid-template-columns: 1fr 300px 1fr;
+  grid-template-columns: 1fr 340px 1fr;
   grid-template-rows: 1fr 1fr;
   grid-template-areas:
     "tl vid tr"
@@ -50,6 +50,8 @@
   align-items: stretch;
   margin-bottom: 24px;
   animation: fadeUp 0.6s 0.1s var(--ease) both;
+  /* let blend mode composite against actual page background */
+  isolation: auto;
 }
 
 /* ── Corner cards ── */
@@ -99,32 +101,72 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   position: relative;
-  /* allow mix-blend-mode to composite onto the grey bg */
-  isolation: auto;
+  /* NO background, NO border — wrapper must be invisible */
+  background: transparent;
+  border: none;
+  isolation: auto;       /* must NOT isolate — lets blend mode
+                            composite against the grey page bg */
 }
 
 .pipeline-video {
   width: 100%;
   height: 100%;
-  max-height: 420px;
+  max-height: 440px;
+  /* cover crops the black letterbox bars at top/bottom */
   object-fit: cover;
-  border-radius: var(--radius-lg);
-  /* mix-blend-mode removes the dark video background so
-     the heart appears to float on the stone-grey page */
-  mix-blend-mode: multiply;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  object-position: center 30%; /* focus on the heart center */
+  /* ─── NO border, NO radius, NO shadow ─── */
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
   background: transparent;
+  /* multiply: grey video bg → matches page bg perfectly
+     coloured heart detail stays vivid */
+  mix-blend-mode: multiply;
+  /* Layered CSS mask:
+     1. Linear gradient: fade top 20% and bottom 20% to transparent
+     2. Radial gradient: fade left/right edges to transparent
+     Both combined so there is literally NO visible edge anywhere */
+  -webkit-mask-image:
+    linear-gradient(
+      to bottom,
+      transparent  0%,
+      black        22%,
+      black        78%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 85% 100% at 50% 50%,
+      black 50%,
+      transparent 100%
+    );
+  -webkit-mask-composite: destination-in;
+  mask-image:
+    linear-gradient(
+      to bottom,
+      transparent  0%,
+      black        22%,
+      black        78%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 85% 100% at 50% 50%,
+      black 50%,
+      transparent 100%
+    );
+  mask-composite: intersect;
 }
 
 .pipeline-video-label {
   font-family: var(--font-display);
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 0.16em;
   color: var(--text-muted);
   text-transform: uppercase;
   text-align: center;
+  opacity: 0.6;
 }
 
 /* ── Tech specs block ── */
