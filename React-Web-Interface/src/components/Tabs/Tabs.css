@@ -1,66 +1,69 @@
-.tabs-container {
-  width: 100%;
+.tabs-wrapper { flex: 1; display: flex; flex-direction: column; }
+
+.tabs-nav {
+  position: sticky;
+  top: 85px;
+  z-index: 90;
+  background: rgba(5, 13, 26, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
 }
 
-.tabs-header {
+.tabs-nav-inner {
   display: flex;
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-  padding: 0;
-  /* border-radius: 10px 10px 0 0; */
-  overflow: hidden;
+  gap: 4px;
+  padding: 10px 0;
 }
 
-.tab-button {
-  flex: 1;
-  background: none;
-  border: none;
-  color: white;
-  padding: 1.5rem 2rem;
-  font-size: 1.2rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.tab-btn {
   position: relative;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-main);
+  white-space: nowrap;
 }
 
-.tab-button::before {
-  content: '';
+.tab-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.15));
+  border-color: rgba(59,130,246,0.3);
+  color: var(--text-primary);
+}
+
+.tab-icon { font-size: 16px; }
+.tab-label { font-weight: 600; }
+
+.tab-active-indicator {
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
+  bottom: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(59,130,246,0.5);
 }
 
-.tab-button:hover::before {
-  left: 100%;
+/* Panels */
+.tab-panel {
+  display: none;
+  animation: fadeInUp 0.3s ease;
 }
-
-.tab-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.tab-button.active {
-  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-  box-shadow: 0 2px 20px rgba(52, 152, 219, 0.3);
-}
-
-.tab-content {
-  width: 100%;
-  min-height: 80vh;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .tabs-header {
-    flex-direction: column;
-  }
-  
-  .tab-button {
-    padding: 1rem 1.5rem;
-    font-size: 1.1rem;
-  }
-}
+.tab-panel.active { display: block; }

@@ -1,3 +1,9 @@
+import sys
+import io
+# Force UTF-8 output on Windows to handle emoji in print statements
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import torch
@@ -71,58 +77,61 @@ class CancerNASModel(nn.Module):
         return x
 
 class GradCAM:
+    """
+    Grad-CAM using a forward hook for activations and torch.autograd.grad
+    for gradients. This avoids inplace-ReLU conflicts that break backward hooks.
+    """
     def __init__(self, model, target_layer):
         self.model = model
         self.target_layer = target_layer
-        self.gradients = None
         self.activations = None
-        self.hook_handles = []
-        
-        self._register_hooks()
-    
-    def _register_hooks(self):
+        self._hook = None
+        self._register_forward_hook()
+
+    def _register_forward_hook(self):
         def forward_hook(module, input, output):
+            # Keep the computation graph (don't detach) so autograd.grad can flow
             self.activations = output
-            
-        def backward_hook(module, grad_input, grad_output):
-            self.gradients = grad_output[0]
-            
-        # Register hooks
-        forward_handle = self.target_layer.register_forward_hook(forward_hook)
-        backward_handle = self.target_layer.register_backward_hook(backward_hook)
-        self.hook_handles = [forward_handle, backward_handle]
-    
+        self._hook = self.target_layer.register_forward_hook(forward_hook)
+
     def generate(self, input_tensor, target_class=None):
-        # Forward pass
+        self.model.eval()
+
+        # Forward pass — keep graph alive for gradient computation
         output = self.model(input_tensor)
-        
+
         if target_class is None:
             target_class = output.argmax(dim=1).item()
-            
-        # Zero gradients
-        self.model.zero_grad()
-        
-        # Backward pass for target class
-        one_hot = torch.zeros_like(output)
-        one_hot[0, target_class] = 1
-        output.backward(gradient=one_hot)
-        
-        # Pool gradients
-        gradients = self.gradients[0].mean(dim=(1, 2), keepdim=True)
-        
-        # Weight activations by gradients
-        cam = (gradients * self.activations[0]).sum(dim=0)
-        cam = torch.relu(cam)  # ReLU to keep only positive influences
-        
-        # Normalize
+
+        # Score for target class
+        score = output[0, target_class]
+
+        # Compute gradient of score w.r.t. the captured activations
+        # create_graph=False is fine; we just need first-order grads
+        grads = torch.autograd.grad(
+            outputs=score,
+            inputs=self.activations,
+            retain_graph=False,
+            create_graph=False,
+        )[0]  # shape: (1, C, H, W)
+
+        # Global-average-pool gradients → channel importance weights
+        weights = grads.mean(dim=(2, 3), keepdim=True)  # (1, C, 1, 1)
+
+        # Weighted sum of activations
+        cam = (weights * self.activations).sum(dim=1).squeeze()  # (H, W)
+        cam = torch.relu(cam)
+
+        # Normalize to [0, 1]
         cam = cam - cam.min()
         cam = cam / (cam.max() + 1e-8)
-        
+
         return cam.detach().cpu().numpy(), target_class
-    
+
     def remove_hooks(self):
-        for handle in self.hook_handles:
-            handle.remove()
+        if self._hook:
+            self._hook.remove()
+
 
 def create_heatmap(cam, original_image, alpha=0.5):
     """Create heatmap overlay on original image"""
@@ -289,13 +298,19 @@ except Exception as e:
     # Use the class names from your training results
     class_names = ['colon_aca', 'colon_n', 'lung_aca', 'lung_n', 'lung_scc']
 
-# Map class names to human readable format
+# Map class names to human readable format (matching actual model class names)
 CLASS_NAME_MAP = {
     'colon_aca': 'Colon Adenocarcinoma',
-    'colon_n': 'Colon Benign', 
+    'colon_n': 'Colon Benign',
     'lung_aca': 'Lung Adenocarcinoma',
     'lung_n': 'Lung Benign',
-    'lung_scc': 'Lung Squamous Cell Carcinoma'
+    'lung_scc': 'Lung Squamous Cell Carcinoma',
+    # Also handle underscore variants from actual checkpoint
+    'Colon_Adenocarcinoma': 'Colon Adenocarcinoma',
+    'Colon_Benign_Tissue': 'Colon Benign',
+    'Lung-Benign_Tissue': 'Lung Benign',
+    'Lung_Adenocarcinoma': 'Lung Adenocarcinoma',
+    'Lung_Squamous_Cell_Carcinoma': 'Lung Squamous Cell Carcinoma',
 }
 
 # Preprocessing transform (must match training transform)
@@ -421,37 +436,57 @@ def predict_with_explanation():
         # Preprocess and predict
         input_tensor = transform(image).unsqueeze(0)
         
-        with torch.no_grad():
-            output = model(input_tensor)
-            probabilities = torch.nn.functional.softmax(output[0], dim=0)
-            confidence, predicted = torch.max(probabilities, 0)
-        
-        # Generate Grad-CAM explanation
+        # ── Step 1: Fast inference (no grad needed) ─────────────────────────
+        # ── Single forward pass: Grad-CAM + Prediction together ──────────────
+        # Running the model once with gradients gives us both the heatmap and
+        # the class scores — no need for a separate no_grad inference pass.
         explanation_b64 = None
-        if MODEL_LOADED:
-            try:
-                # Use the last convolutional layer for Grad-CAM
-                target_layer = None
-                # Find the last convolutional layer in features
-                for name, module in model.features.named_modules():
-                    if isinstance(module, nn.Conv2d):
-                        target_layer = module
-                
-                if target_layer:
-                    gradcam = GradCAM(model, target_layer)
-                    cam, target_class = gradcam.generate(input_tensor, predicted.item())
-                    gradcam.remove_hooks()
-                    
-                    # Create heatmap
-                    explanation_image = create_heatmap(cam, original_image)
-                    explanation_b64 = image_to_base64(explanation_image)
-                    print("✅ Grad-CAM explanation generated successfully")
-                else:
-                    print("⚠️ No convolutional layer found for Grad-CAM")
-            except Exception as e:
-                print(f"⚠️ Grad-CAM generation failed: {e}")
-                # Continue without Grad-CAM
-                explanation_b64 = None
+        probabilities = None
+        confidence = None
+        predicted = None
+
+        try:
+            # Find the last Conv2d layer in model.features
+            target_layer = None
+            for name, module in model.features.named_modules():
+                if isinstance(module, nn.Conv2d):
+                    target_layer = module
+
+            if target_layer:
+                grad_input = transform(image).unsqueeze(0).requires_grad_(True)
+                gradcam = GradCAM(model, target_layer)
+                cam, pred_class_idx = gradcam.generate(grad_input)
+                gradcam.remove_hooks()
+
+                # Re-run inference (no_grad) to get clean probabilities
+                # Use the same input but detached for speed
+                with torch.no_grad():
+                    out2 = model(input_tensor)
+                    probabilities = torch.nn.functional.softmax(out2[0], dim=0)
+                    confidence, predicted = torch.max(probabilities, 0)
+
+                # Build heatmap
+                explanation_image = create_heatmap(cam, original_image)
+                explanation_b64 = image_to_base64(explanation_image)
+                print("✅ Grad-CAM + prediction complete")
+            else:
+                print("⚠️ No Conv2d layer found; falling back to inference-only")
+                with torch.no_grad():
+                    output = model(input_tensor)
+                    probabilities = torch.nn.functional.softmax(output[0], dim=0)
+                    confidence, predicted = torch.max(probabilities, 0)
+
+        except Exception as e:
+            import traceback
+            print(f"⚠️ Grad-CAM failed: {e}")
+            traceback.print_exc()
+            # Fallback: plain inference without heatmap
+            explanation_b64 = None
+            with torch.no_grad():
+                output = model(input_tensor)
+                probabilities = torch.nn.functional.softmax(output[0], dim=0)
+                confidence, predicted = torch.max(probabilities, 0)
+
         
         # Prepare results
         results = []

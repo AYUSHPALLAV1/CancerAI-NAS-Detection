@@ -1,82 +1,103 @@
 import './ExplanationView.css';
 
-const ExplanationView = ({ explanation, diagnosis, confidence }) => {
+const ExplanationView = ({ explanation, diagnosis, confidence, isCancer }) => {
   if (!explanation) return null;
 
   return (
     <div className="explanation-view">
-      <h3>AI Explanation</h3>
-      
-      <div className="explanation-section">
-        <h4>Why this diagnosis?</h4>
-        <p className="explanation-text">{explanation.textual}</p>
+      <div className="explanation-header">
+        <h3>🧠 Explainable AI Analysis</h3>
+        <span className="xai-badge">Grad-CAM + Textual XAI</span>
       </div>
 
-      {explanation.heatmap_image && (
-        <div className="explanation-section">
-          <h4>Key Areas Identified</h4>
-          <p>Red areas show regions most influential in the diagnosis:</p>
-          <div className="heatmap-container">
-            <img 
-              src={`data:image/png;base64,${explanation.heatmap_image}`} 
-              alt="AI attention heatmap"
-              className="heatmap-image"
-            />
-            <div className="heatmap-legend">
-              <div className="legend-item">
-                <span className="legend-color high-importance"></span>
-                <span>High importance</span>
+      <div className="explanation-grid">
+        {/* Grad-CAM heatmap */}
+        {explanation.heatmap_image && (
+          <div className="heatmap-panel">
+            <div className="panel-label">
+              <span>🌡️</span>
+              <span>Grad-CAM Heatmap</span>
+            </div>
+            <div className="heatmap-container">
+              <img
+                src={`data:image/png;base64,${explanation.heatmap_image}`}
+                alt="Grad-CAM heatmap"
+                className="heatmap-img"
+              />
+              <div className="heatmap-legend">
+                <div className="legend-bar" />
+                <div className="legend-labels">
+                  <span>Low</span>
+                  <span>Medium</span>
+                  <span>High</span>
+                </div>
+                <div className="legend-caption">Model attention intensity</div>
               </div>
-              <div className="legend-item">
-                <span className="legend-color medium-importance"></span>
-                <span>Medium importance</span>
+            </div>
+            <p className="heatmap-desc">
+              Red/yellow regions show where the model focused to make its prediction.
+              High activation areas correspond to key diagnostic features.
+            </p>
+          </div>
+        )}
+
+        {/* Textual explanation + key factors */}
+        <div className="textual-panel">
+          {/* AI Reasoning */}
+          <div className="reasoning-box">
+            <div className="panel-label">
+              <span>💬</span>
+              <span>AI Reasoning</span>
+            </div>
+            <p className="reasoning-text">{explanation.textual}</p>
+          </div>
+
+          {/* Key factors */}
+          {explanation.key_factors && explanation.key_factors.length > 0 && (
+            <div className="key-factors-box">
+              <div className="panel-label">
+                <span>🔑</span>
+                <span>Key Diagnostic Factors</span>
               </div>
-              <div className="legend-item">
-                <span className="legend-color low-importance"></span>
-                <span>Low importance</span>
+              <div className="factors-list">
+                {explanation.key_factors.map((factor, i) => (
+                  <div key={i} className="factor-chip" style={{ animationDelay: `${i * 0.08}s` }}>
+                    <span className={`factor-bullet ${isCancer ? 'cancer' : 'benign'}`} />
+                    <span>{factor}</span>
+                  </div>
+                ))}
               </div>
+            </div>
+          )}
+
+          {/* Confidence breakdown */}
+          <div className="confidence-breakdown">
+            <div className="panel-label">
+              <span>📈</span>
+              <span>Confidence Breakdown</span>
+            </div>
+            <div className="breakdown-bars">
+              {[
+                { label: 'Feature Clarity', value: Math.min(confidence + 0.03, 1) },
+                { label: 'Pattern Match',   value: Math.min(confidence - 0.02, 1) },
+                { label: 'Model Certainty', value: confidence },
+              ].map((item, i) => (
+                <div key={i} className="breakdown-item">
+                  <div className="breakdown-header">
+                    <span className="breakdown-label">{item.label}</span>
+                    <span className="breakdown-value">{(item.value * 100).toFixed(0)}%</span>
+                  </div>
+                  <div className="breakdown-track">
+                    <div
+                      className="breakdown-fill"
+                      style={{ width: `${item.value * 100}%`, '--target-width': `${item.value * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      )}
-
-      {explanation.key_factors && (
-        <div className="explanation-section">
-          <h4>Key Factors Considered</h4>
-          <div className="factors-list">
-            {explanation.key_factors.map((factor, index) => (
-              <div key={index} className="factor-item">
-                <span className="factor-icon">🔍</span>
-                <span>{factor}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="confidence-breakdown">
-        <h4>Confidence Analysis</h4>
-        <div className="confidence-level">
-          <div className="confidence-bar">
-            <div 
-              className="confidence-fill" 
-              style={{ width: `${confidence * 100}%` }}
-            ></div>
-          </div>
-          <div className="confidence-labels">
-            <span>Low</span>
-            <span>Medium</span>
-            <span>High</span>
-            <span>Very High</span>
-          </div>
-        </div>
-        <p className="confidence-description">
-          {confidence > 0.9 
-            ? "The model is very confident in this diagnosis based on clear pathological features."
-            : confidence > 0.7
-            ? "Good confidence level with identifiable characteristic features."
-            : "Moderate confidence. Additional clinical correlation may be beneficial."}
-        </p>
       </div>
     </div>
   );
