@@ -1,85 +1,141 @@
+/* ═══════════════════════════════════════════════════════════
+   HERO  —  Video background, text left, Ather-style
+   ═══════════════════════════════════════════════════════════ */
 .hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 4rem 0; /* Reduced padding since it's in a tab */
-  text-align: center;
-  width: 100%;
-}
-
-/* Keep the rest of the Hero CSS the same */
-
-.hero-content h2 {
-  font-size: 3rem;
-  margin-bottom: 1.5rem;
-  font-weight: 600;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.hero-content p {
-  font-size: 1.3rem;
-  max-width: 900px;
-  margin: 0 auto 3rem;
-  line-height: 1.8;
-  opacity: 0.95;
-}
-
-.hero-stats {
+  position: relative;
+  min-height: 95vh;
   display: flex;
-  justify-content: center;
-  gap: 4rem;
-  margin-top: 3rem;
-  flex-wrap: wrap;
+  align-items: center;
+  overflow: hidden;
+  background: #0a0b0d;  /* dark base while video loads */
 }
 
-.stat {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 2rem;
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  min-width: 180px;
-  transition: transform 0.3s ease;
+/* ── Looping background video ── */
+.hero-video {
+  position: absolute;
+  /* Anchor video to the RIGHT side */
+  top: 0;
+  right: 0;
+  width: 75%;           /* occupies right 75% of the viewport */
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  z-index: 0;
+  pointer-events: none;
 }
 
-.stat:hover {
-  transform: translateY(-5px);
+/* ── Left-to-right gradient: opaque stone on left, transparent on right ── */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    #e8e9ea 0%,          /* solid stone left edge — text readable */
+    #e8e9ea 28%,         /* hold solid */
+    rgba(232,233,234,0.85) 40%,
+    rgba(232,233,234,0.30) 58%,
+    rgba(232,233,234,0.05) 72%,
+    transparent 100%
+  );
 }
 
-.stat h3 {
-  font-size: 3rem;
+/* ── Dashed circle decoration (top-left) ── */
+.hero-circle-deco {
+  position: absolute;
+  top: 30px;
+  left: -90px;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  border: 1px dashed rgba(17,18,20,0.14);
+  pointer-events: none;
+  z-index: 2;
+}
+.hero-circle-deco::after {
+  content: '';
+  position: absolute;
+  inset: 40px;
+  border-radius: 50%;
+  border: 1px dashed rgba(17,18,20,0.08);
+}
+
+/* ── Layout ── */
+.hero-layout {
+  position: relative;
+  z-index: 3;             /* above overlay and video */
+  width: 100%;
+  padding: 80px 0;
+}
+
+/* ── Left content column ── */
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  max-width: 480px;       /* keep text tight to the left */
+  animation: fadeUp 0.7s var(--ease) both;
+}
+
+/* Badge */
+.hero-badge {
+  background: rgba(255,255,255,0.65);
+  border: 1px solid rgba(17,18,20,0.20);
+  animation: fadeIn 0.5s 0.1s both;
+}
+
+/* Headline */
+.hero-headline {
+  font-family: var(--font-display);
+  font-size: clamp(68px, 9vw, 116px);
+  line-height: 0.94;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+  text-transform: uppercase;
   margin: 0;
-  font-weight: 700;
+  /* subtle text-shadow so headline pops even if video bleeds in */
+  text-shadow: 0 2px 24px rgba(232,233,234,0.8);
 }
 
-.stat p {
-  margin: 0.8rem 0 0;
-  font-size: 1rem;
-  opacity: 0.9;
+/* Outlined/stroke variant */
+.hero-headline-em {
+  -webkit-text-stroke: 2.5px var(--text-primary);
+  color: transparent;
 }
 
-@media (max-width: 768px) {
-  .hero {
-    padding: 3rem 0;
+/* Subtext */
+.hero-sub {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.72;
+  color: var(--text-secondary);
+  max-width: 380px;
+  /* slight frosted pill behind text for legibility */
+  background: rgba(232,233,234,0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .hero-video { width: 100%; }
+  .hero-overlay {
+    background: linear-gradient(
+      to right,
+      rgba(232,233,234,0.92) 0%,
+      rgba(232,233,234,0.60) 60%,
+      rgba(232,233,234,0.10) 100%
+    );
   }
-  
-  .hero-content h2 {
-    font-size: 2rem;
-  }
-  
-  .hero-content p {
-    font-size: 1.1rem;
-  }
-  
-  .hero-stats {
-    gap: 1.5rem;
-  }
-  
-  .stat {
-    min-width: 140px;
-    padding: 1.5rem;
-  }
-  
-  .stat h3 {
-    font-size: 2.2rem;
-  }
+  .hero-headline { font-size: clamp(52px, 12vw, 80px); }
+}
+
+@media (max-width: 520px) {
+  .hero-headline { font-size: 52px; }
+  .hero-video { object-position: 70% center; }
 }

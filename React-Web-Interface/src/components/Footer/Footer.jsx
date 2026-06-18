@@ -1,47 +1,40 @@
 import './Footer.css';
 
-const Footer = () => {
-  return (
-    <footer className="footer">
-      <div className="footer-glow" />
-      <div className="container">
-        <div className="footer-content">
-          <div className="footer-left">
-            <div className="footer-logo-text">🧬 CancerAI NAS</div>
-            <p className="footer-desc">
-              Advanced Medical AI Research Platform using Neural Architecture Search
-              and Explainable Artificial Intelligence for cancer detection.
-            </p>
-            <div className="footer-tags">
-              {['PyTorch 2.0', 'AutoML / NAS', 'Grad-CAM XAI', 'Flask REST API', 'React 19', 'LC25000'].map(t => (
-                <span key={t} className="footer-tag">{t}</span>
-              ))}
-            </div>
-          </div>
+const Footer = () => (
+  <footer className="footer">
+    <div className="container footer-inner">
 
-          <div className="footer-right">
-            <div className="footer-metric">
-              <span className="fm-value">99.04%</span>
-              <span className="fm-label">Validation Accuracy</span>
-            </div>
-            <div className="footer-metric">
-              <span className="fm-value">5</span>
-              <span className="fm-label">Cancer Classes</span>
-            </div>
-            <div className="footer-metric">
-              <span className="fm-value">LC25000</span>
-              <span className="fm-label">Training Dataset</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="footer-bottom">
-          <span>⚕️ For research and educational purposes only · Not for clinical use</span>
-          <span className="footer-credit">Built with PyTorch · AutoML · Grad-CAM XAI · 2025</span>
-        </div>
+      {/* ── Left ── */}
+      <div className="footer-left">
+        <div className="footer-logo">CANCERⒶI</div>
+        <p className="footer-tagline">
+          Medical AI Research · For educational purposes only
+        </p>
       </div>
-    </footer>
-  );
-};
+
+      {/* ── Centre tags ── */}
+      <div className="footer-tags">
+        {['PyTorch 2.0', 'AutoML / NAS', 'Grad-CAM XAI', 'Flask', 'React 19', 'LC25000'].map(t => (
+          <span key={t} className="footer-tag">{t}</span>
+        ))}
+      </div>
+
+      {/* ── Right ── */}
+      <div className="footer-right">
+        <span className="footer-acc">99.04%</span>
+        <span className="footer-acc-lbl">Validation Accuracy</span>
+      </div>
+
+    </div>
+
+    {/* ── Bottom bar ── */}
+    <div className="footer-bottom">
+      <div className="container footer-bottom-inner">
+        <span>⚕ Not for clinical use · Research only</span>
+        <span>Built with PyTorch · AutoML · Grad-CAM XAI · 2025</span>
+      </div>
+    </div>
+  </footer>
+);
 
 export default Footer;

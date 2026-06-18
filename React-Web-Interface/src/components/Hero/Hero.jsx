@@ -1,34 +1,49 @@
 import './Hero.css';
 
-const Hero = () => {
-  return (
-    <section className="hero">
-      <div className="container">
-        <div className="hero-content">
-          <h2>Advanced Cancer Detection with Neural Architecture Search</h2>
-          <p>
-            Our system uses cutting-edge AutoML technology to automatically design 
-            and train highly accurate convolutional neural networks for detecting 
-            lung and colon cancer from tissue images.
-          </p>
-          <div className="hero-stats">
-            <div className="stat">
-              <h3>96.3%</h3>
-              <p>Validation Accuracy</p>
-            </div>
-            <div className="stat">
-              <h3>5</h3>
-              <p>Cancer Types Detected</p>
-            </div>
-            <div className="stat">
-              <h3>NAS</h3>
-              <p>Neural Architecture Search</p>
-            </div>
-          </div>
-        </div>
+const Hero = () => (
+  <section className="hero">
+
+    {/* ── Video background (right-biased, looping) ── */}
+    <video
+      className="hero-video"
+      src="/hero-bg.mp4"
+      autoPlay
+      loop
+      muted
+      playsInline
+    />
+
+    {/* ── Gradient overlay so text stays readable ── */}
+    <div className="hero-overlay" />
+
+    {/* ── Dashed circle decoration ── */}
+    <div className="hero-circle-deco" aria-hidden="true" />
+
+    {/* ── Content — left side ── */}
+    <div className="container hero-layout">
+      <div className="hero-left">
+
+        <span className="badge hero-badge">↳ Medical · AutoML · NAS</span>
+
+        <h1 className="hero-headline">
+          BUILT TO<br />
+          <span className="hero-headline-em">DETECT</span><br />
+          CANCER.
+        </h1>
+
+        <p className="hero-sub">
+          NAS-optimised CNN trained on 25,000 histopathology images —
+          5 cancer types, 99.04 % accuracy, Grad-CAM explainability.
+        </p>
+
+        <a href="#how-it-works" className="btn-dark" style={{ marginTop: '28px' }}>
+          How it works <span className="arrow">↗</span>
+        </a>
+
       </div>
-    </section>
-  );
-};
+    </div>
+
+  </section>
+);
 
 export default Hero;

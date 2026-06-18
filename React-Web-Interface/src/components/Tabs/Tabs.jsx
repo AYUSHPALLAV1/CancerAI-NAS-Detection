@@ -3,36 +3,34 @@ import './Tabs.css';
 
 const Tabs = ({ children }) => {
   const [activeTab, setActiveTab] = useState(0);
-
   const tabs = Array.isArray(children) ? children : [children];
-
-  const tabIcons = ['🧠', '🔬', '📊'];
 
   return (
     <div className="tabs-wrapper">
-      <div className="tabs-nav">
+      {/* ── Tab bar ── */}
+      <div className="tabs-bar">
         <div className="container">
-          <div className="tabs-nav-inner">
-            {tabs.map((tab, index) => (
+          <div className="tabs-bar-inner">
+            {tabs.map((tab, i) => (
               <button
-                key={index}
-                className={`tab-btn ${activeTab === index ? 'active' : ''}`}
-                onClick={() => setActiveTab(index)}
+                key={i}
+                className={`tab-btn${activeTab === i ? ' active' : ''}`}
+                onClick={() => setActiveTab(i)}
               >
-                <span className="tab-icon">{tabIcons[index]}</span>
-                <span className="tab-label">{tab?.props?.title || `Tab ${index + 1}`}</span>
-                {activeTab === index && <span className="tab-active-indicator" />}
+                <span className="tab-label">{tab?.props?.title || `Tab ${i + 1}`}</span>
+                {activeTab === i && <span className="tab-line" />}
               </button>
             ))}
           </div>
         </div>
       </div>
 
+      {/* ── Tab panels ── */}
       <div className="tabs-content">
-        {tabs.map((tab, index) => (
+        {tabs.map((tab, i) => (
           <div
-            key={index}
-            className={`tab-panel ${activeTab === index ? 'active' : ''}`}
+            key={i}
+            className={`tab-panel${activeTab === i ? ' active' : ''}`}
           >
             {tab}
           </div>

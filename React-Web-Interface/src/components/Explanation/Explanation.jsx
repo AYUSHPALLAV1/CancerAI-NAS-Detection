@@ -1,91 +1,76 @@
 import './Explanation.css';
 
-const Explanation = () => {
-  return (
-    <section className="explanation">
-      <div className="container">
-        <h2>How Our AI System Works</h2>
-        
-        <div className="explanation-content">
-          <div className="explanation-step">
-            <div className="step-number">1</div>
-            <h3>Neural Architecture Search (NAS)</h3>
-            <p>
-              Instead of manually designing the neural network, our system uses NAS to automatically 
-              explore thousands of possible architectures. It tests different configurations of:
-            </p>
-            <ul>
-              <li>Number of convolutional blocks</li>
-              <li>Filter multipliers</li>
-              <li>Kernel sizes</li>
-              <li>Batch normalization usage</li>
-              <li>Dropout rates</li>
-              <li>Dense layer configurations</li>
-            </ul>
-          </div>
+const steps = [
+  {
+    num: '01',
+    title: 'Architecture Search',
+    body: 'NAS automatically explores 15 CNN configurations — varying conv blocks, kernel sizes, filter multipliers, batch norm, and dropout — selecting the best by validation accuracy.',
+  },
+  {
+    num: '02',
+    title: 'Automated Training',
+    body: 'Each candidate is trained end-to-end on LC25000 histopathology images. ReduceLROnPlateau adapts the learning rate; the top configuration is promoted to full 30-epoch training.',
+  },
+  {
+    num: '03',
+    title: 'Superior Accuracy',
+    body: 'The NAS model hits 99.04 % validation accuracy — a +12.9 % lift over manually designed baselines — with a 3.4 % generalisation gap confirming robustness.',
+  },
+  {
+    num: '04',
+    title: 'Grad-CAM Explainability',
+    body: 'Every prediction comes with a heatmap highlighting the tissue regions that drove the decision, generated via a hook-free autograd.grad implementation for fast CPU inference.',
+  },
+];
 
-          <div className="explanation-step">
-            <div className="step-number">2</div>
-            <h3>Automated Model Training</h3>
-            <p>
-              Each candidate architecture is trained on our dataset of lung and colon tissue images.
-              The system evaluates performance and selects the best architecture based on validation accuracy.
-            </p>
-          </div>
+const techRows = [
+  ['Dataset',    'LC25000 — 25,000 histopathology images, 5 classes'],
+  ['Classes',    'Lung Benign · Lung ACA · Lung SCC · Colon Benign · Colon ACA'],
+  ['Image size', '128 × 128 px · RGB · normalised'],
+  ['Framework',  'PyTorch 2.0 · Custom NAS · Flask REST API'],
+  ['XAI method', 'Grad-CAM via torch.autograd.grad (no backward hooks)'],
+  ['Accuracy',   '99.04 % validation · 0.056 validation loss'],
+];
 
-          <div className="explanation-step">
-            <div className="step-number">3</div>
-            <h3>Superior Performance</h3>
-            <p>
-              The NAS-optimized model achieves 96.3% validation accuracy, significantly outperforming
-              traditional manually-designed models (89.6% accuracy). It also shows better generalization
-              with less overfitting.
-            </p>
-          </div>
+const Explanation = () => (
+  <section className="explanation" id="how-it-works">
+    <div className="container">
 
-          <div className="explanation-step">
-            <div className="step-number">4</div>
-            <h3>Image Analysis</h3>
-            <p>
-              When you upload an image, our model analyzes it through multiple convolutional layers
-              to extract features, followed by classification layers that identify the tissue type
-              with high confidence.
-            </p>
-          </div>
-        </div>
+      {/* ── Section label ── */}
+      <div className="section-eyebrow">
+        <span className="badge">How it works</span>
+        <div className="eyebrow-line" />
+      </div>
 
-        <div className="technical-details">
-          <h3>Technical Details</h3>
-          <div className="details-grid">
-            <div className="detail-item">
-              <h4>Dataset</h4>
-              <p>LC25000 dataset with 25,000 images across 5 classes</p>
-            </div>
-            <div className="detail-item">
-              <h4>Classes</h4>
-              <p>Lung benign, Lung adenocarcinoma, Lung squamous cell carcinoma, Colon adenocarcinoma, Colon benign</p>
-            </div>
-            <div className="detail-item">
-              <h4>Image Size</h4>
-              <p>128×128 pixels</p>
-            </div>
-            <div className="detail-item">
-              <h4>Training</h4>
-              <p>15 epochs for NAS search, 30 epochs for final training</p>
-            </div>
-            <div className="detail-item">
-              <h4>Framework</h4>
-              <p>PyTorch with custom NAS implementation</p>
-            </div>
-            <div className="detail-item">
-              <h4>Performance</h4>
-              <p>96.3% accuracy, 0.056 validation loss</p>
-            </div>
+      {/* ── Big heading ── */}
+      <h2 className="section-heading">THE PIPELINE</h2>
+
+      {/* ── Step cards ── */}
+      <div className="steps-grid">
+        {steps.map(({ num, title, body }) => (
+          <div key={num} className="step-card glass-card">
+            <span className="step-num">{num}</span>
+            <h3 className="step-title">{title}</h3>
+            <p className="step-body">{body}</p>
           </div>
+        ))}
+      </div>
+
+      {/* ── Technical details table ── */}
+      <div className="tech-block glass-card">
+        <h3 className="tech-heading">Technical Specs</h3>
+        <div className="tech-table">
+          {techRows.map(([key, val]) => (
+            <div key={key} className="tech-row">
+              <span className="tech-key">{key}</span>
+              <span className="tech-val">{val}</span>
+            </div>
+          ))}
         </div>
       </div>
-    </section>
-  );
-};
+
+    </div>
+  </section>
+);
 
 export default Explanation;

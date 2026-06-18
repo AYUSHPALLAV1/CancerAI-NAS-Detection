@@ -1,93 +1,101 @@
-.test-tab-hero {
-  background: linear-gradient(135deg, rgba(59,130,246,0.06) 0%, rgba(139,92,246,0.04) 100%);
-  border-bottom: 1px solid var(--border);
-  padding: 36px 0 28px;
+/* ═══════════════════════════════════════════════════════════
+   TEST TAB  —  Banner + chips
+   ═══════════════════════════════════════════════════════════ */
+.test-tab { background: var(--bg-base); }
+
+/* ── Banner ── */
+.test-banner {
+  position: relative;
+  padding: 64px 0 52px;
+  overflow: hidden;
+  background: var(--bg-surface);
+  border-bottom: 1px solid rgba(17,18,20,0.09);
 }
 
-.test-hero-content {
+.test-banner-watermark {
+  position: absolute;
+  right: -1%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: clamp(140px, 20vw, 260px);
+  line-height: 1;
+  color: var(--text-faint);
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: 0.04em;
+}
+
+.test-banner-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 32px;
+  gap: 48px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 }
 
-.test-hero-badge {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--accent-cyan);
-  background: rgba(6,182,212,0.1);
-  border: 1px solid rgba(6,182,212,0.2);
-  padding: 5px 14px;
-  border-radius: 20px;
-  margin-bottom: 12px;
+.test-banner-left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeUp 0.5s var(--ease) both;
 }
 
-.test-hero-title {
-  font-size: 32px;
-  font-weight: 900;
+.test-banner-title {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 8vw, 88px);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
   color: var(--text-primary);
-  line-height: 1.15;
-  margin-bottom: 12px;
+  text-transform: uppercase;
+  margin: 0;
 }
 
-.test-hero-desc {
-  font-size: 14px;
+.test-title-stroke {
+  -webkit-text-stroke: 2px var(--text-primary);
+  color: transparent;
+}
+
+.test-banner-sub {
+  font-size: 13px;
   color: var(--text-secondary);
-  max-width: 480px;
+  max-width: 380px;
   line-height: 1.7;
+  margin: 0;
 }
 
-.test-hero-stats {
+/* ── Stat chips ── */
+.test-banner-chips {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
+  animation: fadeUp 0.5s 0.1s var(--ease) both;
 }
 
-.hero-stat-card {
+.test-chip {
+  padding: 18px 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 4px;
-  padding: 16px 20px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  text-align: center;
   min-width: 110px;
-  transition: var(--transition);
 }
-
-.hero-stat-card:hover {
-  border-color: var(--border-hover);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-glow);
+.tc-val {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1;
+  color: var(--text-primary);
 }
-
-.hero-stat-icon { font-size: 22px; }
-
-.hero-stat-value {
-  font-size: 20px;
-  font-weight: 900;
-  font-family: var(--font-mono);
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.hero-stat-label {
-  font-size: 11px;
+.tc-lbl {
+  font-size: 10px;
   font-weight: 600;
-  color: var(--text-muted);
+  letter-spacing: 0.10em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--text-muted);
 }
 
-@media (max-width: 768px) {
-  .test-hero-title { font-size: 24px; }
-  .test-hero-stats { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 640px) {
+  .test-banner-inner { flex-direction: column; align-items: flex-start; }
+  .test-banner-chips { grid-template-columns: repeat(4, 1fr); }
 }

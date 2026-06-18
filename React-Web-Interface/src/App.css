@@ -1,7 +1,1 @@
-/* App.css - Layout wrapper */
-.App {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  animation: fadeIn 0.5s ease;
-}
+.App { min-height: 100vh; display: flex; flex-direction: column; }
