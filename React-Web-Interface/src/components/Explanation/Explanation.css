@@ -2,11 +2,11 @@
    EXPLANATION  —  Pipeline with central heart video
    ═══════════════════════════════════════════════════════════ */
 
-/* The video background is ~#ededed. Setting the section to
-   exactly that colour means no blending tricks are needed —
-   the video and the section simply share the same grey. */
+/* Video background sampled via OpenCV across multiple frames:
+   right-edge pixels (background area) = ~rgb(204-210, 204-210, 204-210)
+   Average ≈ #cdcdcd. Setting section to this makes them match exactly. */
 :root {
-  --pipeline-bg: #ededed;
+  --pipeline-bg: #cdcdcd;
 }
 
 .explanation {
